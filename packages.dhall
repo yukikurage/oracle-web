@@ -4,6 +4,13 @@ Welcome to your new Dhall package-set!
 Below are instructions for how to edit this file for most use
 cases, so that you don't need to know Dhall to use it.
 
+## Warning: Don't Move This Top-Level Comment!
+
+Due to how `dhall format` currently works, this comment's
+instructions cannot appear near corresponding sections below
+because `dhall format` will delete the comment. However,
+it will not delete a top-level comment like this one.
+
 ## Use Cases
 
 Most will want to do one or both of these options:
@@ -42,7 +49,6 @@ in  upstream
   with halogen.repo = "https://example.com/path/to/git/repo.git"
 
   with halogen-vdom.version = "v4.0.0"
-  with halogen-vdom.dependencies = [ "extra-dependency" ] # halogen-vdom.dependencies
 -------------------------------
 
 ### Additions
@@ -99,7 +105,6 @@ in  upstream
 -------------------------------
 -}
 let upstream =
-      https://github.com/purescript/package-sets/releases/download/psc-0.15.15-20241016/packages.dhall
-        sha256:94e94563ca20746b235278cece49e1d4435dc5e27d8a362e780655befd288d61
+      https://github.com/purescript/package-sets/releases/download/psc-0.15.15-20241012/packages.dhall sha256:4ec6cd6fb45bcc9235f649c81a7a7c59dbae4325ddf6a01fecbaa791c9b85919
 
 in  upstream

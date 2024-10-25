@@ -79,21 +79,22 @@ component musics = hooks do
 
       forWithIndex_ musics \idx musicData ->
         JE.div
-          [ "class" @= pure "w-full h-full fixed flex items-start justify-center overflow-y-auto transition-all "
+          [ "class" @= pure "w-full h-full absolute flex items-start justify-center overflow-y-auto transition-all cursor-pointer "
               <> ifM (currentMusicIndexSig <#> (_ == idx)) (pure "opacity-100 pointer-events-auto") (pure "opacity-0 pointer-events-none")
           ]
           do
-            musicComponent musicData
+            musicComponent musicData $ writeChannel setCurrentMusicIndex (-1)
 
-musicComponent :: forall m. MonadHooks m => MusicData -> Component m
-musicComponent musicData = hooks do
+musicComponent :: forall m. MonadHooks m => MusicData -> m Unit -> Component m
+musicComponent musicData onClose = hooks do
   lyrics <- useAff $ pure $ getFile musicData.lyricsFile
 
   pure do
-    JE.div [ "class" := "flex flex-nowrap flex-col justify-center w-3/4 gap-6 p-5" ] do
+    JE.div [ "class" := "relative flex flex-col justify-center w-3/4 gap-6 p-5 cursor-auto" ] do
+      JE.button [ "class" := "absolute text-4xl right-5 top-5 h-24 w-24 flex justify-center items-center hover:scale-105", on click \_ -> onClose ] $ text "✕"
       JE.div [ "class" := "w-full min-h-fit flex flex-col items-center justify-start gap-8 p-5 shrink-0" ] do
         JE.div [ "class" := "text-6xl font-sans" ] $ text musicData.icon
         JE.div [ "class" := "text-4xl font-NotoJP font-bold scale-y-125" ] $ text musicData.title
         JE.div [ "class" := "text-lg font-NotoJP scale-y-125" ] $ text $ "feat. " <> musicData.singer
-      JE.div [ "class" := "w-full max-h-80 overflow-y-auto text-base font-NotoJP scale-y-125 whitespace-pre" ] do
+      JE.div [ "class" := "w-full max-h-fit text-lg font-NotoJP scale-x-90 whitespace-pre py-12 px-4" ] do
         textSig $ maybe "404" identity <$> lyrics

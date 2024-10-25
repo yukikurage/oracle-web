@@ -13,17 +13,17 @@ musics =
   [ { title: "後光"
     , icon: "✧"
     , singer: "ナースロボ_タイプT"
-    , lyricsFile: "aaaaa"
+    , lyricsFile: "./lyrics/backlight.txt"
     }
   , { title: "ようこそ"
     , icon: "⌽"
     , singer: "ナースロボ_タイプT & 雨晴はう"
-    , lyricsFile: "aaaaa"
+    , lyricsFile: "./lyrics/welcome.txt"
     }
   , { title: "アンチウイルス"
     , icon: "⍁"
     , singer: "四国めたん"
-    , lyricsFile: "aaaaa"
+    , lyricsFile: "./lyrics/antivirus.txt"
     }
   , { title: "SYSCALL"
     , icon: "☾"
@@ -33,6 +33,6 @@ musics =
   , { title: "◼︎"
     , icon: "◼︎"
     , singer: "◼︎"
-    , lyricsFile: "aaaaa"
+    , lyricsFile: "./lyrics/qed.txt"
     }
   ]
