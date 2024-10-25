@@ -109,10 +109,10 @@ musicComponent musicData onClose = hooks do
 
   pure do
     JE.div [ "class" := "relative flex flex-col justify-center w-full md:w-3/4 gap-6 p-5 cursor-auto", on click \e -> liftEffect $ stopPropagation e ] do
-      JE.button [ "class" := "absolute text-4xl right-5 top-5 h-24 w-24 flex justify-center items-center hover:scale-110 transition-all", on click \_ -> onClose ] $ text "✕"
+      JE.button [ "class" := "absolute text-4xl right-5 top-5 h-24 w-24 flex justify-end items-start p-2 hover:scale-110 transition-all", on click \_ -> onClose ] $ text "✕"
       JE.div [ "class" := "w-full min-h-fit flex flex-col items-center justify-start gap-8 p-5 shrink-0" ] do
         JE.div [ "class" := "text-6xl font-sans" ] $ text musicData.icon
         JE.div [ "class" := "text-4xl font-NotoJP font-bold scale-y-125" ] $ text musicData.title
         JE.div [ "class" := "text-lg font-NotoJP scale-y-125" ] $ text $ "feat. " <> musicData.singer
-      JE.div [ "class" := "w-full max-h-fit text-lg font-NotoJP whitespace-pre-wrap py-12" ] do
+      JE.div [ "class" := "w-full max-h-fit text-lg font-NotoJP whitespace-pre-wrap py-12 px-2" ] do
         textSig $ maybe "404" identity <$> lyrics
