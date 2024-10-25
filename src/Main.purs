@@ -8,7 +8,6 @@ import Affjax.Web as AW
 import Control.Safely (for_)
 import Data.Either (Either(..))
 import Data.Foldable (traverse_)
-import Data.FoldableWithIndex (forWithIndex_)
 import Data.Map (Map)
 import Data.Map as M
 import Data.Maybe (Maybe(..), isJust, maybe)
@@ -76,7 +75,7 @@ component musics order = hooks do
             <> ifM isMusicOpenedSig (pure "opacity-0 pointer-events-none") (pure "opacity-100 pointer-events-auto")
         ]
         do
-          forWithIndex_ musics \idx musicData ->
+          for_ order \idx ->
             JE.button
               [ "class" := "w-12 h-12 flex justify-center items-center"
               , on click
@@ -85,9 +84,9 @@ component musics order = hooks do
                       when (not isMusicOpened) $ usePushRoute (P.toPath $ Music idx)
                   )
               ]
-              do
-                JE.div [ "class" := "w-10 h-10 flex justify-center items-center text-5xl hover:scale-110 transition-all" ] $ text musicData.icon
-
+              case M.lookup idx musics of
+                Just musicData -> JE.div [ "class" := "w-10 h-10 flex justify-center items-center text-5xl hover:scale-110 transition-all" ] $ text musicData.icon
+                Nothing -> mempty
       for_ order \idx ->
         JE.div
           [ "class" @= pure "w-full h-full absolute flex items-start justify-center overflow-y-auto transition-all cursor-pointer "
