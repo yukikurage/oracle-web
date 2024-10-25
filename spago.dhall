@@ -23,11 +23,16 @@ to generate this file without the comments in this block.
   , "enums"
   , "foldable-traversable"
   , "jelly"
+  , "jelly-router"
   , "jelly-signal"
   , "maybe"
+  , "ordered-collections"
   , "prelude"
+  , "routing"
+  , "routing-duplex"
   , "safely"
   , "tuples"
+  , "web-events"
   , "web-html"
   ]
 , packages = ./packages.dhall
