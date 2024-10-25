@@ -67,11 +67,11 @@ component musics order = hooks do
         ]
       JE.img
         [ "src" := "Logo@8x.png"
-        , "class" @= pure "w-96 transition-all "
+        , "class" @= pure "w-72 md:w-96 transition-all "
             <> ifM isMusicOpenedSig (pure "opacity-0") (pure "opacity-100")
         ]
       JE.div
-        [ "class" @= pure "flex gap-8 font-sans transition-all "
+        [ "class" @= pure "flex gap-4 md:gap-8 font-sans transition-all "
             <> ifM isMusicOpenedSig (pure "opacity-0 pointer-events-none") (pure "opacity-100 pointer-events-auto")
         ]
         do
@@ -114,5 +114,5 @@ musicComponent musicData onClose = hooks do
         JE.div [ "class" := "text-6xl font-sans" ] $ text musicData.icon
         JE.div [ "class" := "text-4xl font-NotoJP font-bold scale-y-125" ] $ text musicData.title
         JE.div [ "class" := "text-lg font-NotoJP scale-y-125" ] $ text $ "feat. " <> musicData.singer
-      JE.div [ "class" := "w-full max-h-fit text-lg font-NotoJP scale-x-90 whitespace-pre py-12" ] do
+      JE.div [ "class" := "w-full max-h-fit text-lg font-NotoJP whitespace-pre-wrap py-12" ] do
         textSig $ maybe "404" identity <$> lyrics
