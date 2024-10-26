@@ -85,28 +85,24 @@ component musics order = hooks do
         do
           for_ order \idx ->
             JE.button
-              [ "class" := "w-12 h-12 flex justify-center items-center"
+              [ "class" := "w-9 h-9 md:w-12 md:h-12 flex justify-center items-center"
               , on click
                   ( \_ -> usePushRoute (P.toPath $ Music idx)
                   )
               ]
               case M.lookup idx musics of
-                Just musicData -> JE.div [ "class" := "w-10 h-10 flex justify-center items-center text-5xl hover:scale-110 transition-all" ] $ text musicData.icon
+                Just musicData -> JE.div [ "class" := "w-10 h-10 flex justify-center items-center text-4xl md:text-5xl hover:scale-110 transition-all" ] $ text musicData.icon
                 Nothing -> mempty
-      JE.div
-        [ "class" @= pure "flex gap-4 md:gap-8 font-sans transition-all "
-            <> ifM isMenuHiding (pure "opacity-0 pointer-events-none") (pure "opacity-100 pointer-events-auto")
-        ]
-        do
+
           JE.button
-            [ "class" := "w-12 h-12 flex justify-center items-center"
+            [ "class" := "w-9 h-9 md:w-12 flex justify-center items-center"
             , on click
                 ( \_ -> usePushRoute (P.toPath Jacket)
                 )
             ]
             do
               JE.div
-                [ "class" := "w-10 h-10 flex justify-center items-center text-4xl hover:scale-110 transition-all" ] $ text "⨝"
+                [ "class" := "w-10 h-10 flex justify-center items-center text-2xl hover:scale-110 transition-all" ] $ text "⨝"
       for_ order \idx ->
         JE.div
           [ "class" @= pure "w-full h-full absolute flex items-start justify-center overflow-y-auto transition-all cursor-pointer "
