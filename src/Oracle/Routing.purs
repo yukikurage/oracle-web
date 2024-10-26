@@ -4,18 +4,19 @@ import Prelude
 
 import Data.Either.Nested (type (\/))
 import Data.Generic.Rep (class Generic)
-import Routing.Duplex (RouteDuplex', parse, print, root, segment, string)
+import Routing.Duplex (RouteDuplex', parse, path, print, root, segment, string)
 import Routing.Duplex.Generic as G
 import Routing.Duplex.Parser (RouteError)
 
-data Page = Home | Music String
+data Page = Home | Music String | Jacket
 
 derive instance Generic Page _
 
 route :: RouteDuplex' Page
 route = root $ G.sum
   { "Home": G.noArgs
-  , "Music": string segment
+  , "Jacket": path "jacket" $ G.noArgs
+  , "Music": path "lyrics" $ string segment
   }
 
 toPath :: Page -> String

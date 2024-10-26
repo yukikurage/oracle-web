@@ -13,12 +13,12 @@ import Data.Map as M
 import Data.Maybe (Maybe(..), isJust, maybe)
 import Effect (Effect)
 import Effect.Aff (Aff, launchAff_)
-import Effect.Class (liftEffect)
-import Effect.Class.Console (error)
+import Effect.Class (class MonadEffect, liftEffect)
+import Effect.Class.Console (error, log)
 import Jelly.Aff (awaitBody)
 import Jelly.Component (Component, hooks, text, textSig)
 import Jelly.Element as JE
-import Jelly.Hooks (class MonadHooks, runHooks_, useAff)
+import Jelly.Hooks (class MonadHooks, runHooks_, useAff, useEffect_)
 import Jelly.Hydrate (mount)
 import Jelly.Prop (on, (:=), (@=))
 import Jelly.Router (class Router, runRouterT, useCurrentRoute, usePushRoute)
@@ -54,8 +54,16 @@ component musics order = hooks do
       Right (Music idx) -> M.lookup idx musics
       _ -> Nothing
   let isMusicOpenedSig = isJust <$> currentMusicDataSig
+  let
+    isJacketOpenedSig = currentPage <#> case _ of
+      Right Jacket -> true
+      _ -> false
+  let
+    isMenuHiding = (||) <$> isMusicOpenedSig <*> isJacketOpenedSig
 
   let onClose = usePushRoute (P.toPath Home) :: m Unit
+
+  useEffect_ $ isJacketOpenedSig <#> (show >>> log)
 
   pure do
     JE.div [ "class" := "w-screen h-screen text-5xl flex flex-col gap-6 justify-center items-center w-screen h-screen font-noto" ] do
@@ -63,30 +71,42 @@ component musics order = hooks do
         [ "src" := "./Background.png"
         , "class" @=
             pure "w-screen h-screen fixed scale-125 -z-10 object-cover transition-all "
-            <> ifM isMusicOpenedSig (pure "opacity-50 blur-md") (pure "opacity-100 blur-sm")
+            <> ifM isMenuHiding (pure "opacity-50 blur-md") (pure "opacity-100 blur-sm")
         ]
       JE.img
         [ "src" := "Logo@8x.png"
         , "class" @= pure "w-72 md:w-96 transition-all "
-            <> ifM isMusicOpenedSig (pure "opacity-0") (pure "opacity-100")
+            <> ifM isMenuHiding (pure "opacity-0") (pure "opacity-100")
         ]
       JE.div
         [ "class" @= pure "flex gap-4 md:gap-8 font-sans transition-all "
-            <> ifM isMusicOpenedSig (pure "opacity-0 pointer-events-none") (pure "opacity-100 pointer-events-auto")
+            <> ifM isMenuHiding (pure "opacity-0 pointer-events-none") (pure "opacity-100 pointer-events-auto")
         ]
         do
           for_ order \idx ->
             JE.button
               [ "class" := "w-12 h-12 flex justify-center items-center"
               , on click
-                  ( \_ -> do
-                      isMusicOpened <- readSignal isMusicOpenedSig
-                      when (not isMusicOpened) $ usePushRoute (P.toPath $ Music idx)
+                  ( \_ -> usePushRoute (P.toPath $ Music idx)
                   )
               ]
               case M.lookup idx musics of
                 Just musicData -> JE.div [ "class" := "w-10 h-10 flex justify-center items-center text-5xl hover:scale-110 transition-all" ] $ text musicData.icon
                 Nothing -> mempty
+      JE.div
+        [ "class" @= pure "flex gap-4 md:gap-8 font-sans transition-all "
+            <> ifM isMenuHiding (pure "opacity-0 pointer-events-none") (pure "opacity-100 pointer-events-auto")
+        ]
+        do
+          JE.button
+            [ "class" := "w-12 h-12 flex justify-center items-center"
+            , on click
+                ( \_ -> usePushRoute (P.toPath Jacket)
+                )
+            ]
+            do
+              JE.div
+                [ "class" := "w-10 h-10 flex justify-center items-center text-4xl hover:scale-110 transition-all" ] $ text "⨝"
       for_ order \idx ->
         JE.div
           [ "class" @= pure "w-full h-full absolute flex items-start justify-center overflow-y-auto transition-all cursor-pointer "
@@ -102,6 +122,16 @@ component musics order = hooks do
           case M.lookup idx musics of
             Just musicData -> musicComponent musicData onClose
             Nothing -> mempty
+      JE.div
+        [ "class" @= pure "w-full h-full absolute flex items-start justify-center overflow-y-auto transition-all cursor-pointer "
+            <> ifM
+              isJacketOpenedSig
+              (pure "opacity-100 pointer-events-auto")
+              (pure "opacity-0 pointer-events-none")
+        , on click \_ -> onClose
+        ]
+        do
+          jacketComponent onClose
 
 musicComponent :: forall m. MonadHooks m => MusicData -> m Unit -> Component m
 musicComponent musicData onClose = hooks do
@@ -116,3 +146,16 @@ musicComponent musicData onClose = hooks do
         JE.div [ "class" := "text-lg font-NotoJP scale-y-125" ] $ text $ "feat. " <> musicData.singer
       JE.div [ "class" := "w-full max-h-fit text-lg font-NotoJP whitespace-pre-wrap py-12 px-2" ] do
         textSig $ maybe "404" identity <$> lyrics
+
+jacketComponent :: forall m. MonadEffect m => m Unit -> Component m
+jacketComponent onClose =
+  JE.div [ "class" := "relative flex flex-col justify-center h-full w-full md:w-3/4 gap-6 p-5 cursor-auto", on click \e -> liftEffect $ stopPropagation e ] do
+    JE.button [ "class" := "absolute text-4xl right-5 top-5 h-24 w-24 flex justify-end items-start p-2 hover:scale-110 transition-all", on click \_ -> onClose ] $ text "✕"
+    JE.div [ "class" := "w-full h-full flex flex-col items-center justify-center gap-12 p-5 shrink-0" ] do
+      JE.img
+        [ "src" := "./jacket.png"
+        , "class" @=
+            pure "w-full h-full max-w-96 max-h-96 object-contain transition-all"
+        ]
+
+      JE.a [ "class" := "relative rounded-full w-64 h-10 border border-fuchsia-500 bg-opacity-0 hover:border-2 transition-all", "href" := "./jacket.png", "download" := "" ] $ JE.button [ "class" := "absolute font-NotoJP text-3xl scale-y-75 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" ] $ text "Download"
