@@ -66,7 +66,18 @@ component musics order = hooks do
   useEffect_ $ isJacketOpenedSig <#> (show >>> log)
 
   pure do
-    JE.div [ "class" := "w-screen h-screen text-5xl flex flex-col gap-6 justify-center items-center w-screen h-screen font-noto" ] do
+    JE.div [ "class" := "w-screen h-screen text-5xl flex flex-col gap-6 justify-center items-center w-screen h-screen font-noto fixed" ] do
+      JE.a
+        [ "class" @= pure "w-fit flex justify-center items-center absolute right-0 bottom-0 p-8 gap-4 hover:scale-105 transition-all "
+            <> ifM isMenuHiding (pure "opacity-0") (pure "opacity-100")
+        , "href" := "https://x.com/yukikurage_2019"
+        , "target" := "_blank"
+        ]
+        do
+          JE.div
+            [ "class" := "flex justify-center items-center text-4xl" ] $ text "𝕏"
+          JE.div
+            [ "class" := "flex justify-center items-center text-base transition-all" ] $ text "yukikurage_2019"
       JE.img
         [ "src" := "./Background.png"
         , "class" @=
@@ -95,7 +106,7 @@ component musics order = hooks do
                 Nothing -> mempty
 
           JE.button
-            [ "class" := "w-9 h-9 md:w-12 flex justify-center items-center"
+            [ "class" := "w-9 h-9 md:w-12 md:h-12 flex justify-center items-center"
             , on click
                 ( \_ -> usePushRoute (P.toPath Jacket)
                 )
